@@ -84,7 +84,11 @@ export default function PayoutForm(): React.JSX.Element {
     }
 
     const handleTokenSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedToken(tokens.mainnet[Number(e.target.value)]);
+        setSelectedToken(
+            import.meta.env.VITE_APP_APP_ENV == "production"
+                ? tokens.mainnet[Number(e.target.value)]
+                : tokens.testnet[Number(e.target.value)]
+        );
     }
 
     const addRow = () => {
