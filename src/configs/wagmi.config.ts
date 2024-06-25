@@ -7,6 +7,7 @@ export const config = createConfig({
     connectors: [
         coinbaseWallet({ appName: 'Batch Payouts', preference: 'smartWalletOnly' }),
     ],
+    // @ts-ignore
     transports: import.meta.env.VITE_APP_APP_ENV == "production"
         ? {
             [base.id]: http(),

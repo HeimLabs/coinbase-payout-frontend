@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { tokens } from "../configs/tokens.config";
 
-const useTokenBalance = (selectedToken: typeof tokens[number]) => {
+const useTokenBalance = (selectedToken: typeof tokens.mainnet[number]) => {
     const { address } = useAccount();
     const { data: nativeBalance, } = useBalance({ address });
     const { data, ...readData } = useReadContract({
@@ -30,7 +30,7 @@ const useTokenBalance = (selectedToken: typeof tokens[number]) => {
     };
 };
 
-const useBatchPayout = (data: FormRow[], selectedToken: typeof tokens[number]) => {
+const useBatchPayout = (data: FormRow[], selectedToken: typeof tokens.mainnet[number]) => {
     const { writeContractsAsync, isPending: isWritePending, isSuccess: isWriteSuccess } = useWriteContracts();
     const { sendCallsAsync, isPending: isSendPending, isSuccess: isSendSuccess } = useSendCalls();
     const [txHash, setTxHash] = useState<string>();
