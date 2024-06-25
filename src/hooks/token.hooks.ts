@@ -2,7 +2,6 @@ import { useAccount, useBalance, useReadContract } from "wagmi";
 import { erc20Abi } from "viem";
 import { useSendCalls, useWriteContracts } from "wagmi/experimental";
 import { FormRow } from "../types";
-import { contracts } from "../configs/contracts.config";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { tokens } from "../configs/tokens.config";
@@ -12,21 +11,21 @@ const useTokenBalance = (selectedToken: typeof tokens[number]) => {
     const { data: nativeBalance, } = useBalance({ address });
     const { data, ...readData } = useReadContract({
         abi: erc20Abi,
-        address: contracts.token as `0x${string}`,
+        address: selectedToken.address as `0x${string}`,
         functionName: "balanceOf",
         args: [address as `0x${string}`]
     });
-
+    const { data: decimals } = useReadContract({
+        abi: erc20Abi,
+        address: selectedToken.address as `0x${string}`,
+        functionName: "decimals",
+    });
     const returnedData = data as bigint;
 
-    useEffect(() => {
-        console.log("nativeBalance: ", nativeBalance);
-    }, [nativeBalance]);
-
     return {
-        tokenBalance: (selectedToken.address == "0x0000000000000000000000000000")
+        tokenBalance: (selectedToken.address == "0x0000000000000000000000000000000000000000")
             ? (nativeBalance ? (parseInt(nativeBalance.value.toString()) / (10 ** 18)) : 0)
-            : (returnedData ? (parseInt(returnedData.toString()) / (10 ** 18)) : 0),
+            : (returnedData ? (parseInt(returnedData.toString()) / (10 ** (decimals as number))) : 0),
         ...readData
     };
 };
@@ -43,7 +42,7 @@ const useBatchPayout = (data: FormRow[], selectedToken: typeof tokens[number]) =
             var tx;
 
             // NATIVE
-            if (selectedToken.address == "0x0000000000000000000000000000") {
+            if (selectedToken.address == "0x0000000000000000000000000000000000000000") {
                 const calls = data.map((row) => {
                     return {
                         to: row.wallet as `0x${string}`,

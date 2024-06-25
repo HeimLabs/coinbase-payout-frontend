@@ -14,7 +14,11 @@ export default function PayoutForm(): React.JSX.Element {
     const [total, setTotal] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
     const [file, setFile] = useState<File>();
-    const [selectedToken, setSelectedToken] = useState(tokens[0]);
+    const [selectedToken, setSelectedToken] =
+        useState(import.meta.env.VITE_APP_APP_ENV == "production"
+            ? tokens.mainnet[0]
+            : tokens.testnet[0]
+        );
 
     const uploadCsvRef = useRef<HTMLInputElement>(null);
 
@@ -80,7 +84,7 @@ export default function PayoutForm(): React.JSX.Element {
     }
 
     const handleTokenSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedToken(tokens[Number(e.target.value)]);
+        setSelectedToken(tokens.mainnet[Number(e.target.value)]);
     }
 
     const addRow = () => {
@@ -141,9 +145,12 @@ export default function PayoutForm(): React.JSX.Element {
                     <h2>Your Wallet Balance:</h2>
                     <span>
                         <select name="token" id="token" onChange={handleTokenSelection} disabled={step != 0}>
-                            {tokens.map((token, index) => (
-                                <option value={index}>{token.name}</option>
-                            ))}
+                            {(import.meta.env.VITE_APP_APP_ENV == "production"
+                                ? tokens.mainnet
+                                : tokens.testnet)
+                                .map((token, index) => (
+                                    <option value={index}>{token.name}</option>
+                                ))}
                         </select>
                         : {tokenBalance.toLocaleString()} {selectedToken.symbol}
                     </span>
@@ -219,7 +226,7 @@ export default function PayoutForm(): React.JSX.Element {
                                 <h2>Total Payments</h2>
                             </div>
                             <div className={styles.inputContainer}>
-                                <h2 className={`${styles.amounts} ${step == 1 ? styles.confirmed : styles.success}`}>{total.toLocaleString()} {selectedToken.symbol}</h2>
+                                <h2 className={`${styles.amounts} ${step == 1 ? styles.confirmed : styles.success}`}>{total.toLocaleString(undefined, { maximumFractionDigits: 10 })} {selectedToken.symbol}</h2>
                             </div>
                         </div>
                     }
