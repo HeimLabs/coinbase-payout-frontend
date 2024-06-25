@@ -37,6 +37,12 @@ const useBatchPayout = (data: FormRow[], selectedToken: typeof tokens.mainnet[nu
     const [isPending, setIsPending] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
 
+    const { data: decimals } = useReadContract({
+        abi: erc20Abi,
+        address: selectedToken.address as `0x${string}`,
+        functionName: "decimals",
+    });
+
     const batchPayout = async () => {
         try {
             var tx;
@@ -59,7 +65,7 @@ const useBatchPayout = (data: FormRow[], selectedToken: typeof tokens.mainnet[nu
                         address: selectedToken.address as `0x${string}`,
                         abi: erc20Abi,
                         functionName: "transfer",
-                        args: [row.wallet, BigInt(parseFloat(row.amount) * (10 ** 18))],
+                        args: [row.wallet, BigInt(parseFloat(row.amount) * (10 ** (decimals as number)))],
                     }
                 });
 
