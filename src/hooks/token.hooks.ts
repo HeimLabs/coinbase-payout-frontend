@@ -1,8 +1,8 @@
 import { useAccount, useBalance, useReadContract } from "wagmi";
 import { erc20Abi } from "viem";
-import { useSendCalls, useWriteContracts } from "wagmi/experimental";
+import { useCapabilities, useSendCalls, useWriteContracts } from "wagmi/experimental";
 import { FormRow } from "../types";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { tokens } from "../configs/tokens.config";
 
@@ -31,11 +31,30 @@ const useTokenBalance = (selectedToken: typeof tokens.mainnet[number]) => {
 };
 
 const useBatchPayout = (data: FormRow[], selectedToken: typeof tokens.mainnet[number]) => {
+    const { address, chainId } = useAccount();
     const { writeContractsAsync, isPending: isWritePending, isSuccess: isWriteSuccess } = useWriteContracts();
     const { sendCallsAsync, isPending: isSendPending, isSuccess: isSendSuccess } = useSendCalls();
     const [txHash, setTxHash] = useState<string>();
     const [isPending, setIsPending] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+
+    // Paymaster
+    const { data: availableCapabilities } = useCapabilities({ account: address });
+    const capabilities = useMemo(() => {
+        if (!availableCapabilities || !chainId) return {};
+        const capabilitiesForChain = availableCapabilities[chainId];
+        if (
+            capabilitiesForChain["paymasterService"] &&
+            capabilitiesForChain["paymasterService"].supported
+        ) {
+            return {
+                paymasterService: {
+                    url: import.meta.env.VITE_APP_PAYMASTER_URL,
+                },
+            };
+        }
+        return {};
+    }, [availableCapabilities, chainId]);
 
     const { data: decimals } = useReadContract({
         abi: erc20Abi,
@@ -56,7 +75,7 @@ const useBatchPayout = (data: FormRow[], selectedToken: typeof tokens.mainnet[nu
                     }
                 });
 
-                tx = await sendCallsAsync({ calls });
+                tx = await sendCallsAsync({ calls, capabilities });
             }
             // ERC20
             else {
@@ -69,7 +88,7 @@ const useBatchPayout = (data: FormRow[], selectedToken: typeof tokens.mainnet[nu
                     }
                 });
 
-                tx = await writeContractsAsync({ contracts: contractWrites });
+                tx = await writeContractsAsync({ contracts: contractWrites, capabilities });
             }
             console.log("Txn Hash: ", tx);
             setTxHash(tx);
