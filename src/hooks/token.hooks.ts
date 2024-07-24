@@ -49,7 +49,7 @@ const useBatchPayout = (data: FormRow[], selectedToken: typeof tokens.mainnet[nu
         ) {
             return {
                 paymasterService: {
-                    url: import.meta.env.VITE_APP_PAYMASTER_URL,
+                    url: `${import.meta.env.VITE_APP_BACKEND_URL}/paymaster`,
                 },
             };
         }

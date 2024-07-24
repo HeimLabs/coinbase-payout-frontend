@@ -14,6 +14,9 @@ importers:
       papaparse:
         specifier: ^5.4.1
         version: 5.4.1
+      qrcode.react:
+        specifier: ^3.1.0
+        version: 3.1.0(react@18.3.1)
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -3521,6 +3524,11 @@ packages:
   qrcode-terminal-nooctal@0.12.1:
     resolution: {integrity: sha512-jy/kkD0iIMDjTucB+5T6KBsnirlhegDH47vHgrj5MejchSQmi/EAMM0xMFeePgV9CJkkAapNakpVUWYgHvtdKg==}
     hasBin: true
+
+  qrcode.react@3.1.0:
+    resolution: {integrity: sha512-oyF+Urr3oAMUG/OiOuONL3HXM+53wvuH3mtIWQrYmsXoAq0DkvZp2RYUWFSMFtbdOpuS++9v+WAkzNVkMlNW6Q==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
 
   qrcode@1.5.3:
     resolution: {integrity: sha512-puyri6ApkEHYiVl4CFzo1tDkAZ+ATcnbJrJ6RiBM1Fhctdn/ix9MTE3hRph33omisEbC/2fcfemsseiKgBPKZg==}
@@ -8722,6 +8730,10 @@ snapshots:
   qrcode-generator@1.4.4: {}
 
   qrcode-terminal-nooctal@0.12.1: {}
+
+  qrcode.react@3.1.0(react@18.3.1):
+    dependencies:
+      react: 18.3.1
 
   qrcode@1.5.3:
     dependencies:
