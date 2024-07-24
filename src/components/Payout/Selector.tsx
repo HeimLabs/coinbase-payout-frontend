@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styles from "../../styles/Payout/Selector.module.scss";
-import { moneyTransferIcon, sendMoneyIcon } from "../../assets";
+import { moneyTransferIcon, sendMoneyIcon, loading } from "../../assets";
 import { useAccount } from "wagmi";
 import QRCode from 'qrcode.react';
+import { useCreateOnrampLink } from "../../hooks/onramp.hooks";
 
 type SelectorProps = {
     setStep: React.Dispatch<React.SetStateAction<number>>
@@ -10,12 +11,21 @@ type SelectorProps = {
 
 export default function Selector({ setStep }: SelectorProps): React.JSX.Element {
     const { address } = useAccount();
+    const { createOnrampLink, onrampLink, isPending } = useCreateOnrampLink(address);
+
+    useEffect(() => {
+        if (onrampLink)
+            window.open(onrampLink, '_blank');
+    }, [onrampLink])
 
     return (
         <div className={styles.main}>
             <div className={styles.optionContainer}>
-                <div className={styles.option}>
-                    <img src={moneyTransferIcon} alt="On Ramp" />
+                <div className={`${styles.option} ${isPending ? styles.disabled : ""}`} onClick={() => createOnrampLink()}>
+                    {!isPending
+                        ? <img src={moneyTransferIcon} alt="On Ramp" />
+                        : <img src={loading} alt="Loading" />
+                    }
                     <span className={styles.title}>Buy USDC</span>
                     <span className={styles.subtitle}>$1USD=$1USDC</span>
                 </div>
@@ -32,6 +42,6 @@ export default function Selector({ setStep }: SelectorProps): React.JSX.Element 
                     <span className={styles.subtitle}>Upload CSV</span>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
