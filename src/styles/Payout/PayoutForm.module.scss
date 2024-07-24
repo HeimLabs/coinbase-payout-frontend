@@ -36,6 +36,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        overflow-y: visible;
 
         .header {
             display: flex;
@@ -51,6 +52,9 @@
             align-items: center;
             width: 100%;
             gap: 10px;
+            max-height: 60vh;
+            overflow-x: scroll;
+            overflow-y: visible;
 
             .row {
                 display: flex;
@@ -110,6 +114,10 @@
 
             }
         }
+
+        .errorMsg {
+            color: red;
+        }
     }
 }
 
@@ -140,6 +148,11 @@
 
     &:hover {
         background-color: lighten($coinbase-blue, 20%);
+    }
+
+    &:disabled {
+        background-color: lighten($coinbase-blue, 20%);
+        pointer-events: none;
     }
 }
 
