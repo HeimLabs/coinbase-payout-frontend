@@ -36,7 +36,6 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        overflow-y: visible;
 
         .header {
             display: flex;
@@ -54,7 +53,6 @@
             gap: 10px;
             max-height: 60vh;
             overflow-x: scroll;
-            overflow-y: visible;
 
             .row {
                 display: flex;
@@ -67,7 +65,7 @@
                     flex-direction: column;
                     align-items: start;
                     justify-content: space-between;
-                    width: 45%;
+                    width: 48%;
 
                     .rowHeader {
                         font-weight: 700;
@@ -79,11 +77,12 @@
                     }
 
                     input {
-                        width: 100%;
                         padding: 10px;
                         border-radius: 5px;
                         border: 2px solid lightgray;
                         outline: none;
+                        width: 100%;
+                        box-sizing: border-box;
                     }
 
                     .amounts {
