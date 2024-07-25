@@ -5,3 +5,4 @@ export { default as logo } from "./logo.png";
 export { default as moneyTransferIcon } from "./moneyTransfer.png";
 export { default as sendMoneyIcon } from "./sendMoney.png";
 export { default as loading } from "./loading.svg";
+export { default as backIcon } from "./back.png";
