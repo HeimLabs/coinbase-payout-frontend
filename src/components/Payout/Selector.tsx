@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../../styles/Payout/Selector.module.scss";
 import { moneyTransferIcon, sendMoneyIcon, loading } from "../../assets";
 import { useAccount } from "wagmi";
@@ -12,6 +12,7 @@ type SelectorProps = {
 export default function Selector({ setStep }: SelectorProps): React.JSX.Element {
     const { address } = useAccount();
     const { createOnrampLink, onrampLink, isPending } = useCreateOnrampLink(address);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         if (onrampLink)
@@ -29,7 +30,7 @@ export default function Selector({ setStep }: SelectorProps): React.JSX.Element 
                     <span className={styles.title}>Buy USDC</span>
                     <span className={styles.subtitle}>$1USD=$1USDC</span>
                 </div>
-                <div className={`${styles.option} ${styles.disabled}`}>
+                <div className={styles.option} onClick={() => setIsModalOpen(true)}>
                     <QRCode size={80} value={`ethereum:${address}@8453?token=USDC`} />
                     <span className={styles.title}>Receive USDC</span>
                     <span className={styles.subtitle}>100% Free</span>
@@ -40,6 +41,15 @@ export default function Selector({ setStep }: SelectorProps): React.JSX.Element 
                     <img src={sendMoneyIcon} alt="Send Payments" />
                     <span className={styles.title}>Make Payments</span>
                     <span className={styles.subtitle}>Upload CSV</span>
+                </div>
+            </div>
+            {/* QR MODAL */}
+            <div
+                className={`${styles.qrModal} ${isModalOpen ? styles.isOpen : ""}`}
+                onClick={() => setIsModalOpen(false)}>
+                <div className={styles.innerModal}>
+                    <QRCode preserveAspectRatio="1" className={styles.qr} value={`ethereum:${address}@8453?token=USDC`} />
+                    Scan QR code if sending funds from another wallet
                 </div>
             </div>
         </div >
