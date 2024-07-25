@@ -213,7 +213,9 @@ export default function PayoutForm(): React.JSX.Element {
                             </div>}
                             {(step == 1 || step == 2) &&
                                 <div className={`${styles.inputContainer} ${!isAddress(addressedRows[index].wallet) ? styles.errorMsg : ""}`}>
-                                    {addressedRows[index].wallet?.slice(0, 7) + "..." + addressedRows[index].wallet?.slice(-7)}
+                                    {isAddress(addressedRows[index].wallet)
+                                        ? addressedRows[index].wallet?.slice(0, 7) + "..." + addressedRows[index].wallet?.slice(-7)
+                                        : addressedRows[index].wallet?.slice(0, 7) + "... | Invalid ENS/Address"}
                                 </div>}
                             {/* AMOUNT */}
                             {step == 0 && <div className={styles.inputContainer}>
