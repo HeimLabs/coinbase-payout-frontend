@@ -6,7 +6,11 @@
 
     .inner {
         width: 100%;
-        max-width: 1000px;
+        max-width: 900px;
+
+        &.wider {
+            max-width: 1000px;
+        }
 
         .toolbar {
             width: 100%;

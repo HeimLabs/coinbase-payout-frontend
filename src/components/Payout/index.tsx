@@ -18,7 +18,7 @@ export default function Payout(): React.JSX.Element {
 
     return (
         <div className={styles.main}>
-            <div className={styles.inner}>
+            <div className={`${styles.inner} ${step == 1 ? styles.wider : ""}`}>
                 <Header />
                 <div className={styles.toolbar}>
                     {step == 1 &&
