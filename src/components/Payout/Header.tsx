@@ -2,7 +2,7 @@ import React from "react";
 import styles from "../../styles/Payout/Header.module.scss";
 import { useAccount, useDisconnect } from "wagmi";
 import { toast } from "react-toastify";
-import { logoutIcon } from "../../assets";
+import { logoutIcon, logo } from "../../assets";
 
 export default function Header(): React.JSX.Element {
     const { address, chain } = useAccount();
@@ -19,7 +19,7 @@ export default function Header(): React.JSX.Element {
 
     return (
         <div className={styles.main}>
-            <h1>The Batch Payouts App</h1>
+            <img src={logo} alt="Paymaker Logo" />
             <div className={styles.walletContainer}>
                 <div
                     onClick={copyToClipboard}

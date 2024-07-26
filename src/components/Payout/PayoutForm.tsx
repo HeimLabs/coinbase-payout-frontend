@@ -7,6 +7,10 @@ import { FormRow } from "../../types";
 import { useCallsStatus } from "wagmi/experimental";
 import Papa from "papaparse";
 import { tokens } from "../../configs/tokens.config";
+import { useEnsLookup } from "../../hooks/ens.hooks";
+import { isAddress } from "viem";
+
+const maxRows = 200;
 
 export default function PayoutForm(): React.JSX.Element {
     const [step, setStep] = useState(0);
@@ -20,11 +24,14 @@ export default function PayoutForm(): React.JSX.Element {
             : tokens.testnet[0]
         );
 
+    const { addressedRows, isError: isEnsError } = useEnsLookup(rows);
+
     const uploadCsvRef = useRef<HTMLInputElement>(null);
 
     const { tokenBalance } = useTokenBalance(selectedToken);
-    const { batchPayout, txHash, isPending, isSuccess } = useBatchPayout(rows, selectedToken);
+    const { batchPayout, txHash, isPending, isSuccess } = useBatchPayout(addressedRows, selectedToken);
     const { isFetched, isFetching } = useCallsStatus({ id: txHash as string });
+
 
     const handleInputChange = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -114,7 +121,7 @@ export default function PayoutForm(): React.JSX.Element {
                     const parsedRows = results.data.map((row: any) => ({
                         wallet: row[0],
                         amount: row[1],
-                    })).slice(0, 6);
+                    })).slice(0, maxRows);
                     setRows(parsedRows);
                 },
             });
@@ -194,7 +201,7 @@ export default function PayoutForm(): React.JSX.Element {
                         <div className={styles.row} key={index}>
                             {/* WALLET ADDRESS */}
                             {step == 0 && <div className={styles.inputContainer}>
-                                <span className={styles.rowHeader}>Wallet Address:</span>
+                                <span className={styles.rowHeader}>Wallet Address <span>(ENS/0xAddress)</span> :</span>
                                 <input
                                     type="text"
                                     name="wallet"
@@ -204,9 +211,12 @@ export default function PayoutForm(): React.JSX.Element {
                                     onChange={(e) => handleInputChange(index, e)}
                                 />
                             </div>}
-                            {(step == 1 || step == 2) && <div className={styles.inputContainer}>
-                                {row.wallet?.slice(0, 7) + "..." + row.wallet?.slice(-7)}
-                            </div>}
+                            {(step == 1 || step == 2) &&
+                                <div className={`${styles.inputContainer} ${!isAddress(addressedRows[index].wallet) ? styles.errorMsg : ""}`}>
+                                    {isAddress(addressedRows[index].wallet)
+                                        ? addressedRows[index].wallet?.slice(0, 7) + "..." + addressedRows[index].wallet?.slice(-7)
+                                        : addressedRows[index].wallet?.slice(0, 7) + "... | Invalid ENS/Address"}
+                                </div>}
                             {/* AMOUNT */}
                             {step == 0 && <div className={styles.inputContainer}>
                                 <span className={styles.rowHeader}>{selectedToken.symbol}:</span>
@@ -235,7 +245,7 @@ export default function PayoutForm(): React.JSX.Element {
                         </div>
                     }
                     <div className={styles.rowActions}>
-                        {(step == 0 && rows.length <= 5) &&
+                        {(step == 0 && rows.length < maxRows) &&
                             <button type="button" className={`${styles.csvBttn} ${styles.addBttn}`} onClick={addRow}>
                                 <img src={addIcon} alt="Add" />
                             </button>}
@@ -245,10 +255,11 @@ export default function PayoutForm(): React.JSX.Element {
                             </button>}
                     </div>
                     {(step == 0 || step == 1) &&
-                        <button type="submit" className={`${styles.primaryBttn} ${isLoading ? styles.shimmer : ""}`}>
+                        <button type="submit" disabled={isEnsError} className={`${styles.primaryBttn} ${isLoading ? styles.shimmer : ""}`}>
                             {step == 0 && "Next"}
                             {step == 1 && "Confirm"}
                         </button>}
+                    {isEnsError && <span className={styles.errorMsg}>ENS Lookup Failed</span>}
                     {step == 2 &&
                         <button className={styles.csvBttn} onClick={handleCsvDownload}>
                             Download CSV
